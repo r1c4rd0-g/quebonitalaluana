@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Valentín</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #ffccd5, #ff99cc, #ff4d4d);
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: #d63384;
+            overflow: hidden;
+            position: relative;
+        }
+        .header {
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70vh;
+        }
+        .hello-kitty {
+            width: 200px;
+            height: auto;
+            animation: heartbeat 1.5s infinite;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .question {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .buttons button {
+            background-color: #ff4d4d;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.3s, background-color 0.3s;
+            position: relative;
+        }
+        .buttons button:hover {
+            transform: scale(1.1);
+        }
+        #yes {
+            animation: shake 2s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            50% { transform: translateX(3px); }
+            75% { transform: translateX(-3px); }
+            100% { transform: translateX(3px); }
+        }
+        #celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+        }
+        .hidden-card {
+            display: none;
+            padding: 40px;
+            border-radius: 20px;
+            background: #ffcccc;
+            box-shadow: 10px 10px 50px rgba(0,0,0,0.2);
+            font-size: 40px;
+            color: #d63384;
+            text-align: center;
+        }
+        .no-message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #d63384;
+        }
+        .warning-message {
+            color: #ff3333;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+        @keyframes colorChange {
+            0% { background-color: #ff4d4d; }
+            25% { background-color: #ff80b3; }
+            50% { background-color: #ff66cc; }
+            75% { background-color: #ff3399; }
+            100% { background-color: #ff4d4d; }
+        }
+
+        #yes {
+            animation: colorChange 3s infinite;
+        }
+
+        /* Confeti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff4d4d;
+            opacity: 0.8;
+            animation: confetti 3s infinite;
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translate(0, -650px); /* Comienza más arriba */
+                opacity: 1;
+            }
+            100% {
+                transform: translate(100px, 100vh); /* Continúa hacia el final de la página */
+                opacity: 0;
+            }
+        }
+
+        .flower {
+            width: 60px;
+            height: 60px;
+            background-image: url('flower.png'); /* Asegúrate de usar una imagen de flor adecuada */
+            background-size: cover;
+            border-radius: 50%;
+            display: inline-block;
+            animation: flowerAnimation 1s forwards;
+        }
+
+        @keyframes flowerAnimation {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.5);
+            }
+        }
+
+        /* Añadir corazones al fondo */
+        body::before {
+            content: "❤️";
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            font-size: 150px;
+            animation: moveHearts 10s infinite;
+            opacity: 0.5;
+        }
+
+        body::after {
+            content: "💖";
+            position: absolute;
+            top: 30%;
+            right: 20%;
+            font-size: 100px;
+            animation: moveHearts 15s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes moveHearts {
+            0% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(30px, 30px);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 id="header-text">Holaaam 7u7Anita7u7, te quiero proponeer una cositaaa... 💖</h1>
+    </div>
+    <div class="container">
+        <img src="hello_kitty_heart.gif" alt="Hello Kitty" class="hello-kitty" id="gifImage">
+        <div class="question" id="questionMessage">❤️ ¿Quieres que sea nuestro San Valentín? ❤️</div>
+        <div class="buttons">
+            <button id="yes" onclick="showResponse(true)">Sí</button>
+            <button id="no" onmouseenter="showWarningMessage()" onmouseleave="hideWarningMessage()" onclick="moveButton()">No</button>
+        </div>
+        <div id="no-message" class="no-message"></div>
+        <div id="warning-message" class="warning-message"></div>
+    </div>
+    <div id="celebration"></div>
+    <div id="love-message" class="hidden-card">jajskajsa dijiste que siii, no me lo esperaba (*guiño guiño*)¡Será un graan día, que felicidaad! 💖</div>
+    <audio id="music" src="/mnt/data/lovebts.mp3"></audio>
+    <script>
+        let noResponses = ["Aquí  no era", "¿Cómo que nooo otra vez?", "Piénsalo bien...", "Vamos, di que sí 💖", "Ah bueno, ta bien", "Ya no es gracioso :(", "ANAA dalee a sii", "Triste, desolado, deprimido...", "NO (si)", "Ve a bañarte mejor", "Ice, frío, hielo", "Cierra los ojos y piénsame", "Ya digo cualquier cosa, total"  ];
+        let noIndex = 0;
+        let yesButton = document.getElementById("yes");
+        let gifImage = document.getElementById("gifImage");
+        let warningMessage = document.getElementById("warning-message");
+
+        function showResponse(yes) {
+            document.getElementById("celebration").style.display = "block";
+            document.getElementById("love-message").style.display = "block"; // Mostrar la tarjeta aquí
+            document.getElementById("music").play();
+
+            gifImage.src = "nuevo_gif.gif";  // Reemplaza con tu gif
+
+            document.getElementById("no").style.display = "none";
+            document.getElementById("no-message").style.display = "none";
+
+            yesButton.innerHTML = "";
+            yesButton.classList.add("flower");
+            yesButton.style.cursor = "default";
+
+            createConfetti();
+
+            // Cambiar el tamaño del botón a su tamaño original después de hacer clic
+            yesButton.style.transform = "scale(1)";
+
+            // Cambiar el texto del botón "Sí" a la imagen PNG
+            yesButton.style.backgroundImage = "url('flower.png')"; // Cambia esto por tu imagen PNG
+
+            // Ocultar el mensaje original de la pregunta
+            document.getElementById("questionMessage").style.display = "none";
+
+            // Cambiar el texto del encabezado
+            document.getElementById("header-text").innerHTML = "jajskajsa dijiste que siii, no me lo esperaba (*guiño guiño*). El primero de muchoos, somos dos flores en un jardín, floreciendo y creciendo juntos ¡Lo vamos a pasar muy bieen!, Eres increiblee y haré hasta lo imposible para que cada momento juntos sea especial para ti, porque te mereces lo mejoor 💖";
+        }
+
+        function moveButton() {
+            let button = document.getElementById("no");
+            let maxWidth = window.innerWidth - button.offsetWidth;
+            let maxHeight = window.innerHeight - button.offsetHeight;
+
+            let randomX = Math.floor(Math.random() * maxWidth);
+            let randomY = Math.floor(Math.random() * maxHeight);
+
+            button.style.position = "absolute";
+            button.style.left = randomX + "px";
+            button.style.top = randomY + "px";
+
+            let noButton = document.getElementById("no");
+            let noMessage = document.getElementById("no-message");
+
+            noButton.innerText = noResponses[noIndex];
+            noIndex = (noIndex + 1) % noResponses.length;
+            
+            noMessage.innerText = "¡Coño pero ahi no era! intenta de nuevo";
+
+            // Aumentar el tamaño del botón "Sí" un 15% cada vez que se hace clic en "No"
+            let currentScale = parseFloat(window.getComputedStyle(yesButton).transform.split(',')[3]) || 1;
+            yesButton.style.transform = `scale(${currentScale + 0.15})`;
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                let confettiPiece = document.createElement('div');
+                confettiPiece.classList.add('confetti');
+                confettiPiece.style.left = `${Math.random() * 100}vw`;
+                confettiPiece.style.animationDelay = `${Math.random() * 2}s`;
+                confettiPiece.style.backgroundColor = getRandomColor();
+                document.body.appendChild(confettiPiece);
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff4d4d', '#ff99cc', '#ffcc00', '#33cc33', '#66ccff'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function showWarningMessage() {
+            warningMessage.style.display = "block";
+            warningMessage.innerHTML = '<span>⚠️</span> ¡Cuidao, ese boton quemaa, mejor no le des!';
+        }
+
+        function hideWarningMessage() {
+            warningMessage.style.display = "none";
+        }
+
+        // Generar corazones flotantes en el fondo
+        function generateHearts() {
+            setInterval(function() {
+                let heart = document.createElement("div");
+                heart.innerHTML = "❤️";
+                heart.style.fontSize = "50px";
+                heart.style.position = "absolute";
+                heart.style.left = `${Math.random() * window.innerWidth}px`;
+                heart.style.top = `${Math.random() * window.innerHeight}px`;
+                heart.style.animation = `moveHearts 8s infinite`;
+                document.body.appendChild(heart);
+            }, 1000);
+        }
+
+        generateHearts(); // Llamar a la función de los corazones al cargar la página
+    </script>
+</body>
+</html>
